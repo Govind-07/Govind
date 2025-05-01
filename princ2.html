@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Data Manager - Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f5f7fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    #app-container {
+      width: 100%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      padding: 25px 30px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      min-height: 600px;
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    p.subtitle {
+      margin: 0 0 20px 0;
+      color: #7f8c8d;
+      font-size: 1rem;
+    }
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 480px;
+      margin-bottom: 15px;
+    }
+    form label {
+      flex: 1 1 100%;
+      font-size: 0.9rem;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+    }
+    form input {
+      margin-top: 4px;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    form button {
+      padding: 10px 18px;
+      background: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      flex: none;
+      transition: background 0.3s ease;
+      min-width: 120px;
+    }
+    form button:hover {
+      background: #1f5f8b;
+    }
+    #toggle-form-btn {
+      background: transparent;
+      color: #2980b9;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9rem;
+      padding: 0;
+      margin-left: 0;
+      align-self: flex-start;
+    }
+    #toggle-form-btn:hover {
+      color: #1f5f8b;
+    }
+    #error-msg {
+      color: #c0392b;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    /* Mode Switch Buttons */
+    #mode-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    #mode-buttons button {
+      background: #2980b9;
+      border: none;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex: 1;
+      min-width: 140px;
+    }
+    #mode-buttons button.active {
+      background: #1f5f8b;
+    }
+    #mode-buttons button:hover {
+      background: #1f5f8b;
+    }
+    /* Data Manager Styles */
+    #data-manager {
+      display: none;
+      flex-direction: column;
+    }
+    #header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    #header-bar h2 {
+      margin: 0;
+      color: #2c3e50;
+      flex: 1 1 auto;
+    }
+    #logout-btn {
+      background: #c0392b;
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex: 0 0 auto;
+      margin-left: 10px;
+    }
+    #logout-btn:hover {
+      background: #8e261b;
+    }
+
+    /* Entry Form and Table Styles */
+    form#entry-form {
+      background: #ffffff;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+      margin-bottom: 30px;
+      box-sizing: border-box;
+    }
+    form#entry-form label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      color: #555;
+      flex: 1 1 150px;
+      min-width: 120px;
+    }
+    form#entry-form input[type="text"],
+    form#entry-form input[type="date"],
+    form#entry-form input[type="number"] {
+      margin-top: 4px;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    form#entry-form button {
+      padding: 10px 20px;
+      background: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+      flex: 0 0 auto;
+      min-width: 120px;
+    }
+    form#entry-form button:hover {
+      background: #1f5f8b;
+    }
+    #data-container {
+      max-width: 900px;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .date-section {
+      margin-bottom: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 15px 20px;
+    }
+    .date-section h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      color: #34495e;
+      border-bottom: 2px solid #2980b9;
+      padding-bottom: 6px;
+      margin-bottom: 15px;
+    }
+    table.entry-table, table.admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.entry-table thead, table.admin-table thead {
+      background: #2980b9;
+      color: white;
+    }
+    table.entry-table th, table.entry-table td,
+    table.admin-table th, table.admin-table td {
+      padding: 10px 8px;
+      border: 1px solid #ddd;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 0.95rem;
+      max-width: 160px;
+      word-break: break-word;
+    }
+    table.entry-table td.actions {
+      white-space: nowrap;
+      width: 120px;
+    }
+    button.edit-btn,
+    button.delete-btn,
+    button.save-btn,
+    button.cancel-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: 5px;
+      transition: background 0.2s ease;
+      font-size: 0.9rem;
+      min-width: 50px;
+    }
+    button.edit-btn {
+      color: #2980b9;
+    }
+    button.edit-btn:hover {
+      background: #d6e9f8;
+    }
+    button.delete-btn {
+      color: #c0392b;
+    }
+    button.delete-btn:hover {
+      background: #f8d6d4;
+    }
+    button.save-btn {
+      color: #27ae60;
+    }
+    button.save-btn:hover {
+      background: #d4f8e1;
+    }
+    button.cancel-btn {
+      color: #7f8c8d;
+    }
+    button.cancel-btn:hover {
+      background: #e3e6e6;
+    }
+    input.editing-input {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      padding: 5px 6px;
+      border-radius: 4px;
+      border: 1px solid #999;
+    }
+    @media (max-width: 920px) {
+      form#entry-form {
+        max-width: 100%;
+      }
+      #data-container {
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 600px) {
+      form#entry-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      form#entry-form label {
+        flex: none;
+        min-width: auto;
+      }
+      form#entry-form button {
+        width: 100%;
+        min-width: auto;
+      }
+      table.entry-table th,
+      table.entry-table td,
+      table.admin-table th,
+      table.admin-table td {
+        font-size: 0.85rem;
+      }
+      table.entry-table td.actions {
+        width: auto;
+        white-space: normal;
+      }
+      button.edit-btn,
+      button.delete-btn,
+      button.save-btn,
+      button.cancel-btn {
+        margin-left: 0;
+        margin-top: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+
+    <!-- Authentication Container -->
+    <div id="auth-container">
+
+      <h1>Daily Data Manager</h1>
+      <p class="subtitle" id="form-title">Login to your account</p>
+
+      <div id="mode-buttons" role="tablist" aria-label="Select user type">
+        <button id="user-mode-btn" role="tab" aria-selected="true" tabindex="0">User Login</button>
+        <button id="admin-mode-btn" role="tab" aria-selected="false" tabindex="-1">Admin Login</button>
+      </div>
+
+      <div id="error-msg" role="alert" aria-live="assertive"></div>
+
+      <!-- User Login Form -->
+      <form id="login-form" aria-label="User login form">
+        <label for="login-username">Username
+          <input type="text" id="login-username" required autocomplete="username" maxlength="50"/>
+        </label>
+        <label for="login-password">Password
+          <input type="password" id="login-password" required autocomplete="current-password" maxlength="50"/>
+        </label>
+        <button type="submit">Login</button>
+      </form>
+
+      <!-- User Registration Form -->
+      <form id="registration-form" aria-label="User registration form" style="display:none;">
+        <label for="reg-username">Choose Username
+          <input type="text" id="reg-username" required autocomplete="username" maxlength="50"/>
+        </label>
+        <label for="reg-password">Choose Password
+          <input type="password" id="reg-password" required autocomplete="new-password" maxlength="50"/>
+        </label>
+        <button type="submit">Register</button>
+      </form>
+
+      <!-- Admin Login Form (separate) -->
+      <form id="admin-login-form" aria-label="Admin login form" style="display:none;">
+        <label for="admin-login-username">Admin Username
+          <input type="text" id="admin-login-username" required autocomplete="username" maxlength="50"/>
+        </label>
+        <label for="admin-login-password">Admin Password
+          <input type="password" id="admin-login-password" required autocomplete="current-password" maxlength="50"/>
+        </label>
+        <button type="submit">Login</button>
+      </form>
+
+      <!-- Admin Registration Form -->
+      <form id="admin-registration-form" aria-label="Admin registration form" style="display:none;">
+        <label for="admin-reg-username">Choose Admin Username
+          <input type="text" id="admin-reg-username" required autocomplete="username" maxlength="50"/>
+        </label>
+        <label for="admin-reg-password">Choose Admin Password
+          <input type="password" id="admin-reg-password" required autocomplete="new-password" maxlength="50"/>
+        </label>
+        <button type="submit">Register</button>
+      </form>
+
+      <button id="toggle-reg-btn" aria-controls="registration-form admin-registration-form" style="margin-top:10px; text-decoration: underline; background:none; border:none; color:#2980b9; cursor:pointer; font-size:0.9rem;">Register new user</button>
+
+    </div>
+
+    <!-- Main Data Manager for User -->
+    <div id="data-manager" aria-label="Daily data management interface" style="display:none; flex-direction: column;">
+      <div id="header-bar">
+        <h2>Welcome, <span id="user-display"></span></h2>
+        <button id="logout-btn">Logout</button>
+      </div>
+      <form id="entry-form" aria-label="Add new daily data entry">
+        <label for="entry-date">Date
+          <input type="date" id="entry-date" required />
+        </label>
+        <label for="glass-type">Glass Type
+          <input type="text" id="glass-type" required maxlength="50" placeholder="e.g. Tumbler" />
+        </label>
+        <label for="glass-size">Glass Size
+          <input type="text" id="glass-size" required maxlength="50" placeholder="e.g. 300ml" />
+        </label>
+        <label for="party-name">Party Name
+          <input type="text" id="party-name" required maxlength="100" placeholder="e.g. John Doe" />
+        </label>
+        <label for="qty">Quantity
+          <input type="number" id="qty" required min="1" placeholder="e.g. 10" />
+        </label>
+        <label for="remarks">Remarks
+          <input type="text" id="remarks" maxlength="200" placeholder="Additional notes (optional)" />
+        </label>
+        <button type="submit" aria-label="Add new entry">Add Entry</button>
+        <button type="button" id="export-btn" aria-label="Export all data to Excel">Export to Excel</button>
+      </form>
+
+      <div id="data-container" aria-live="polite" aria-label="Daily data entries by logged in user">
+        <!-- Data entries grouped by date -->
+      </div>
+    </div>
+
+    <!-- Admin Data Viewer -->
+    <div id="admin-manager" aria-label="Admin interface to view all users' entries" style="display:none; flex-direction: column;">
+      <div id="header-bar-admin" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap;">
+        <h2>Admin Panel - <span id="admin-user-display"></span></h2>
+        <button id="admin-logout-btn" style="background:#c0392b; border:none; color:white; padding:8px 15px; border-radius:6px; font-size:0.9rem; font-weight:600; cursor:pointer; transition:background 0.3s ease;">Logout</button>
+      </div>
+      <button id="admin-export-btn" aria-label="Export all users' data to Excel" style="align-self:flex-start; margin-bottom: 12px; padding: 10px 20px; background:#2980b9; border:none; color:white; border-radius:4px; cursor:pointer; font-weight:600; font-size:1rem; min-width:140px;">Export All Data to Excel</button>
+      <div id="admin-data-container" style="overflow-x:auto; max-width:100%;">
+        <table id="admin-data-table" class="admin-table" aria-label="All users daily data entries">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Date</th>
+              <th>Entry Time</th>
+              <th>Glass Type</th>
+              <th>Glass Size</th>
+              <th>Party Name</th>
+              <th>Quantity</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Filled by script -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+  <script>
+    (function(){
+      // Simple hash function for passwords (not cryptographically secure)
+      function simpleHash(str) {
+        let hash = 0;
+        for(let i=0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash |= 0;
+        }
+        return hash.toString();
+      }
+
+      // DOM Elements for auth
+      const authContainer = document.getElementById('auth-container');
+      const userModeBtn = document.getElementById('user-mode-btn');
+      const adminModeBtn = document.getElementById('admin-mode-btn');
+
+      const errorMsg = document.getElementById('error-msg');
+
+      const loginForm = document.getElementById('login-form');
+      const registrationForm = document.getElementById('registration-form');
+      const adminLoginForm = document.getElementById('admin-login-form');
+      const adminRegistrationForm = document.getElementById('admin-registration-form');
+      const toggleRegBtn = document.getElementById('toggle-reg-btn');
+      const formTitle = document.getElementById('form-title');
+
+      // Main UI containers
+      const dataManager = document.getElementById('data-manager');
+      const adminManager = document.getElementById('admin-manager');
+
+      // User Data Manager elements
+      const userDisplay = document.getElementById('user-display');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      const entryForm = document.getElementById('entry-form');
+      const dateInput = document.getElementById('entry-date');
+      const glassTypeInput = document.getElementById('glass-type');
+      const glassSizeInput = document.getElementById('glass-size');
+      const partyNameInput = document.getElementById('party-name');
+      const qtyInput = document.getElementById('qty');
+      const remarksInput = document.getElementById('remarks');
+      const dataContainer = document.getElementById('data-container');
+      const exportBtn = document.getElementById('export-btn');
+
+      // Admin Data Manager elements
+      const adminUserDisplay = document.getElementById('admin-user-display');
+      const adminLogoutBtn = document.getElementById('admin-logout-btn');
+      const adminExportBtn = document.getElementById('admin-export-btn');
+      const adminDataTableBody = document.querySelector('#admin-data-table tbody');
+
+      // Registered users data stored as:
+      // { username: { passwordHash: string, role: 'user'|'admin' } }
+      let registeredUsers = {};
+
+      // Session data
+      let loggedInUser = null;
+      let loggedInUserRole = null;
+
+      let showingRegistration = false; // for toggling register/login forms on user/admin login screens
+      // Active mode: 'user' or 'admin' (login mode)
+      let activeMode = 'user';
+
+      // Sanitize and lowercase username for consistent keys
+      function sanitizeUsername(name) {
+        return name.trim().toLowerCase();
+      }
+
+      // Load users from localStorage
+      function loadUsers(){
+        const raw = localStorage.getItem('registeredUsers');
+        if(raw){
+          try{
+            registeredUsers = JSON.parse(raw);
+          } catch(e){
+            registeredUsers = {};
+          }
+        }
+      }
+      // Save users to localStorage
+      function saveUsers(){
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      }
+
+      // Load session info from sessionStorage
+      function loadSession(){
+        const user = sessionStorage.getItem('loggedInUser');
+        const role = sessionStorage.getItem('loggedInUserRole');
+        if(user && role && registeredUsers[user] && registeredUsers[user].role === role){
+          loggedInUser = user;
+          loggedInUserRole = role;
+        } else {
+          loggedInUser = null;
+          loggedInUserRole = null;
+        }
+      }
+      // Save session info to sessionStorage
+      function saveSession(user, role){
+        sessionStorage.setItem('loggedInUser', user);
+        sessionStorage.setItem('loggedInUserRole', role);
+        loggedInUser = user;
+        loggedInUserRole = role;
+      }
+      // Clear session info
+      function clearSession(){
+        sessionStorage.removeItem('loggedInUser');
+        sessionStorage.removeItem('loggedInUserRole');
+        loggedInUser = null;
+        loggedInUserRole = null;
+      }
+
+      // UI helpers to show/hide auth and data manager/admin manager
+      function showAuth(){
+        authContainer.style.display = '';
+        dataManager.style.display = 'none';
+        adminManager.style.display = 'none';
+      }
+      function showUserDataManager(){
+        authContainer.style.display = 'none';
+        dataManager.style.display = 'flex';
+        adminManager.style.display = 'none';
+      }
+      function showAdminManager(){
+        authContainer.style.display = 'none';
+        dataManager.style.display = 'none';
+        adminManager.style.display = 'flex';
+      }
+
+      // (Re)set UI mode to user or admin login and show login form by default
+      function setUIMode(mode){
+        activeMode = mode;
+        errorMsg.textContent = '';
+        showingRegistration = false;
+
+        formTitle.textContent = mode === 'user' ? 'User Login' : 'Admin Login';
+
+        // Reset all forms
+        loginForm.reset();
+        registrationForm.reset();
+        adminLoginForm.reset();
+        adminRegistrationForm.reset();
+
+        toggleRegBtn.style.display = '';
+        toggleRegBtn.textContent = mode === 'user' ? 'Register new user' : 'Register new admin';
+
+        // Show correct form(s)
+        if(mode === 'user'){
+          userModeBtn.classList.add('active');
+          adminModeBtn.classList.remove('active');
+
+          loginForm.style.display = '';
+          registrationForm.style.display = 'none';
+          adminLoginForm.style.display = 'none';
+          adminRegistrationForm.style.display = 'none';
+
+          toggleRegBtn.setAttribute('aria-label', 'Register new regular user');
+          userModeBtn.setAttribute('aria-selected', 'true');
+          userModeBtn.tabIndex = 0;
+          adminModeBtn.setAttribute('aria-selected', 'false');
+          adminModeBtn.tabIndex = -1;
+        } else {
+          userModeBtn.classList.remove('active');
+          adminModeBtn.classList.add('active');
+
+          loginForm.style.display = 'none';
+          registrationForm.style.display = 'none';
+          adminLoginForm.style.display = '';
+          adminRegistrationForm.style.display = 'none';
+
+          toggleRegBtn.setAttribute('aria-label', 'Register new admin user');
+          userModeBtn.setAttribute('aria-selected', 'false');
+          userModeBtn.tabIndex = -1;
+          adminModeBtn.setAttribute('aria-selected', 'true');
+          adminModeBtn.tabIndex = 0;
+        }
+      }
+
+      // Toggle registration form for current mode
+      function toggleRegistrationForm(){
+        errorMsg.textContent = '';
+        showingRegistration = !showingRegistration;
+
+        toggleRegBtn.textContent = showingRegistration ? 'Back to Login' : (activeMode === 'user' ? 'Register new user' : 'Register new admin');
+
+        if(activeMode === 'user'){
+          if(showingRegistration){
+            loginForm.style.display = 'none';
+            registrationForm.style.display = '';
+          } else {
+            loginForm.style.display = '';
+            registrationForm.style.display = 'none';
+          }
+        } else {
+          if(showingRegistration){
+            adminLoginForm.style.display = 'none';
+            adminRegistrationForm.style.display = '';
+          } else {
+            adminLoginForm.style.display = '';
+            adminRegistrationForm.style.display = 'none';
+          }
+        }
+      }
+
+      // Switch modes handlers
+      userModeBtn.addEventListener('click', () => setUIMode('user'));
+      adminModeBtn.addEventListener('click', () => setUIMode('admin'));
+      toggleRegBtn.addEventListener('click', toggleRegistrationForm);
+
+      // Authentication handlers
+
+      // Registration for user/admin
+      function handleRegistration(form, role){
+        return function(e){
+          e.preventDefault();
+          errorMsg.textContent = '';
+
+          const usernameInput = form.querySelector('input[type="text"]');
+          const passwordInput = form.querySelector('input[type="password"]');
+
+          let username = usernameInput.value;
+          let password = passwordInput.value;
+
+          if(!username || username.trim().length < 3){
+            errorMsg.textContent = 'Username must be at least 3 characters.';
+            return;
+          }
+          if(!password || password.length < 4){
+            errorMsg.textContent = 'Password must be at least 4 characters.';
+            return;
+          }
+
+          username = sanitizeUsername(username);
+
+          if(registeredUsers[username]){
+            errorMsg.textContent = 'Username already exists.';
+            return;
+          }
+          // Save new user
+          registeredUsers[username] = {
+            passwordHash: simpleHash(password),
+            role
+          };
+          saveUsers();
+          errorMsg.style.color = 'green';
+          errorMsg.textContent = `${role === 'admin' ? 'Admin' : 'User'} registration successful! You can now login.`;
+          form.reset();
+
+          // Switch back to login
+          toggleRegistrationForm();
+
+          // Reset error color after 5 seconds
+          setTimeout(() => {
+            errorMsg.style.color = '#c0392b';
+            errorMsg.textContent = '';
+          }, 5000);
+        }
+      }
+
+      registrationForm.addEventListener('submit', handleRegistration(registrationForm, 'user'));
+      adminRegistrationForm.addEventListener('submit', handleRegistration(adminRegistrationForm, 'admin'));
+
+      // Login handlers
+      function handleLogin(form, role){
+        return function(e){
+          e.preventDefault();
+          errorMsg.textContent = '';
+
+          const usernameInput = form.querySelector('input[type="text"]');
+          const passwordInput = form.querySelector('input[type="password"]');
+
+          let username = usernameInput.value;
+          let password = passwordInput.value;
+
+          if(!username || !password){
+            errorMsg.textContent = 'Please enter username and password.';
+            return;
+          }
+          username = sanitizeUsername(username);
+
+          if(!registeredUsers[username]){
+            errorMsg.textContent = 'Invalid username or password.';
+            return;
+          }
+          if(registeredUsers[username].role !== role){
+            errorMsg.textContent = `User is not registered as ${role}.`;
+            return;
+          }
+          if(registeredUsers[username].passwordHash !== simpleHash(password)){
+            errorMsg.textContent = 'Invalid username or password.';
+            return;
+          }
+
+          // Successful login
+          saveSession(username, role);
+          setupAfterLogin();
+        }
+      }
+
+      loginForm.addEventListener('submit', handleLogin(loginForm, 'user'));
+      adminLoginForm.addEventListener('submit', handleLogin(adminLoginForm, 'admin'));
+
+      // Logout handlers
+      logoutBtn.addEventListener('click', () => {
+        if(confirm('Are you sure you want to logout?')) {
+          clearSession();
+          resetAppAfterLogout();
+        }
+      });
+      adminLogoutBtn.addEventListener('click', () => {
+        if(confirm('Are you sure you want to logout?')) {
+          clearSession();
+          resetAppAfterLogout();
+        }
+      });
+
+      // Setup after login, show respective UI
+      function setupAfterLogin(){
+        errorMsg.textContent = '';
+        if(loggedInUserRole === 'user'){
+          userDisplay.textContent = loggedInUser;
+          showUserDataManager();
+          loadUserData();
+          setTodayAsDefaultDate();
+          renderUserData();
+        } else if(loggedInUserRole === 'admin'){
+          adminUserDisplay.textContent = loggedInUser;
+          showAdminManager();
+          loadAdminData();
+          renderAdminData();
+        } else {
+          // fallback show login
+          showAuth();
+        }
+      }
+
+      // Reset UI for logged out state
+      function resetAppAfterLogout(){
+        userDisplay.textContent = '';
+        adminUserDisplay.textContent = '';
+        showAuth();
+        setUIMode('user');
+        errorMsg.textContent = '';
+      }
+
+      // --- USER DATA MANAGEMENT ---
+
+      // User's daily data stored in localStorage under 'dailyData-username'
+      let userDailyData = {};
+
+      function loadUserData() {
+        const raw = localStorage.getItem('dailyData-' + loggedInUser);
+        if(raw){
+          try{
+            userDailyData = JSON.parse(raw);
+          } catch(e){
+            userDailyData = {};
+          }
+        } else {
+          userDailyData = {};
+        }
+      }
+      function saveUserData() {
+        localStorage.setItem('dailyData-' + loggedInUser, JSON.stringify(userDailyData));
+      }
+
+      function formatDate(dateStr) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const date = new Date(dateStr + 'T00:00:00'); // avoid timezone issues
+        return date.toLocaleDateString(undefined, options);
+      }
+
+      // Create table row for user entry with edit/delete buttons
+      function createUserEntryRow(entry, dateStr, index) {
+        const tr = document.createElement('tr');
+        tr.dataset.date = dateStr;
+        tr.dataset.index = index;
+
+        ['glassType', 'glassSize', 'partyName', 'qty', 'remarks'].forEach(field => {
+          const td = document.createElement('td');
+          td.className = `field-${field}`;
+          td.textContent = entry[field];
+          tr.appendChild(td);
+        });
+
+        const actionsTd = document.createElement('td');
+        actionsTd.className = 'actions';
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.type = 'button';
+        editBtn.textContent = 'Edit';
+        editBtn.addEventListener('click', () => startUserEdit(tr));
+        actionsTd.appendChild(editBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.type = 'button';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => deleteUserEntry(dateStr, index));
+        actionsTd.appendChild(deleteBtn);
+
+        tr.appendChild(actionsTd);
+
+        return tr;
+      }
+
+      function renderUserData() {
+        dataContainer.innerHTML = '';
+
+        const dates = Object.keys(userDailyData).sort((a,b) => new Date(b) - new Date(a));
+        if(dates.length === 0) {
+          dataContainer.innerHTML = '<p>No entries yet. Add some daily data above.</p>';
+          return;
+        }
+
+        dates.forEach(dateStr => {
+          const entries = userDailyData[dateStr];
+
+          const section = document.createElement('section');
+          section.className = 'date-section';
+          section.setAttribute('aria-labelledby', `date-${dateStr}-header`);
+
+          const heading = document.createElement('h2');
+          heading.id = `date-${dateStr}-header`;
+          heading.textContent = formatDate(dateStr);
+          section.appendChild(heading);
+
+          const table = document.createElement('table');
+          table.className = 'entry-table';
+          table.setAttribute('role', 'table');
+          table.setAttribute('aria-describedby', `date-${dateStr}-header`);
+
+          const thead = document.createElement('thead');
+          const trHead = document.createElement('tr');
+          ['Glass Type', 'Glass Size', 'Party Name', 'Quantity', 'Remarks', 'Actions'].forEach(colName => {
+            const th = document.createElement('th');
+            th.scope = 'col';
+            th.textContent = colName;
+            trHead.appendChild(th);
+          });
+          thead.appendChild(trHead);
+          table.appendChild(thead);
+
+          const tbody = document.createElement('tbody');
+
+          entries.forEach((entry, idx) => {
+            const tr = createUserEntryRow(entry, dateStr, idx);
+            tbody.appendChild(tr);
+          });
+
+          table.appendChild(tbody);
+          section.appendChild(table);
+          dataContainer.appendChild(section);
+        });
+      }
+
+      function startUserEdit(tr) {
+        const dateStr = tr.dataset.date;
+        const index = parseInt(tr.dataset.index);
+
+        const entry = userDailyData[dateStr][index];
+
+        while(tr.firstChild) tr.removeChild(tr.firstChild);
+
+        ['glassType', 'glassSize', 'partyName', 'qty', 'remarks'].forEach(field => {
+          const td = document.createElement('td');
+          const input = document.createElement('input');
+          input.className = 'editing-input';
+          input.type = (field === 'qty') ? 'number' : 'text';
+          input.value = entry[field];
+          input.required = (field !== 'remarks');
+          if(field === 'qty') {
+            input.min = 1;
+          }
+          if(field === 'glassType' || field === 'glassSize') {
+            input.maxLength = 50;
+          }
+          if(field === 'partyName') {
+            input.maxLength = 100;
+          }
+          if(field === 'remarks') {
+            input.maxLength = 200;
+          }
+          td.appendChild(input);
+          tr.appendChild(td);
+        });
+
+        const actionsTd = document.createElement('td');
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'save-btn';
+        saveBtn.type = 'button';
+        saveBtn.textContent = 'Save';
+        saveBtn.addEventListener('click', () => finishUserEdit(tr));
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'cancel-btn';
+        cancelBtn.type = 'button';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', () => cancelUserEdit(tr, entry));
+
+        actionsTd.appendChild(saveBtn);
+        actionsTd.appendChild(cancelBtn);
+
+        tr.appendChild(actionsTd);
+      }
+
+      function finishUserEdit(tr) {
+        const dateStr = tr.dataset.date;
+        const index = parseInt(tr.dataset.index);
+
+        const inputs = Array.from(tr.querySelectorAll('input.editing-input'));
+        const [glassTypeInput, glassSizeInput, partyNameInputEl, qtyInputEl, remarksInputEl] = inputs;
+
+        if (!glassTypeInput.value.trim()) {
+          alert('Glass Type is required.');
+          glassTypeInput.focus();
+          return;
+        }
+        if (!glassSizeInput.value.trim()) {
+          alert('Glass Size is required.');
+          glassSizeInput.focus();
+          return;
+        }
+        if (!partyNameInputEl.value.trim()) {
+          alert('Party Name is required.');
+          partyNameInputEl.focus();
+          return;
+        }
+        const qtyVal = parseInt(qtyInputEl.value, 10);
+        if (isNaN(qtyVal) || qtyVal < 1) {
+          alert('Quantity must be a positive number.');
+          qtyInputEl.focus();
+          return;
+        }
+
+        userDailyData[dateStr][index] = {
+          glassType: glassTypeInput.value.trim(),
+          glassSize: glassSizeInput.value.trim(),
+          partyName: partyNameInputEl.value.trim(),
+          qty: qtyVal.toString(),
+          remarks: remarksInputEl.value.trim(),
+          createdAt: userDailyData[dateStr][index].createdAt || new Date().toISOString()
+        };
+        saveUserData();
+        renderUserData();
+      }
+
+      function cancelUserEdit(tr, originalEntry) {
+        const dateStr = tr.dataset.date;
+        const index = parseInt(tr.dataset.index);
+        while(tr.firstChild) tr.removeChild(tr.firstChild);
+        const newRow = createUserEntryRow(originalEntry, dateStr, index);
+        Array.from(newRow.children).forEach(cell => tr.appendChild(cell));
+      }
+
+      function deleteUserEntry(dateStr, idx) {
+        if(!confirm('Are you sure you want to delete this entry?')) return;
+
+        userDailyData[dateStr].splice(idx,1);
+        if(userDailyData[dateStr].length === 0) {
+          delete userDailyData[dateStr];
+        }
+        saveUserData();
+        renderUserData();
+      }
+
+      entryForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const dateVal = dateInput.value;
+        const glassTypeVal = glassTypeInput.value.trim();
+        const glassSizeVal = glassSizeInput.value.trim();
+        const partyNameVal = partyNameInput.value.trim();
+        const qtyValRaw = qtyInput.value;
+        const remarksVal = remarksInput.value.trim();
+
+        if(!dateVal) {
+          alert('Please select a date.');
+          return;
+        }
+        if(!glassTypeVal) {
+          alert('Please enter glass type.');
+          return;
+        }
+        if(!glassSizeVal) {
+          alert('Please enter glass size.');
+          return;
+        }
+        if(!partyNameVal) {
+          alert('Please enter party name.');
+          return;
+        }
+        const qtyVal = parseInt(qtyValRaw, 10);
+        if(isNaN(qtyVal) || qtyVal < 1) {
+          alert('Please enter a valid positive number for quantity.');
+          return;
+        }
+
+        if(!userDailyData[dateVal]) {
+          userDailyData[dateVal] = [];
+        }
+        userDailyData[dateVal].push({
+          glassType: glassTypeVal,
+          glassSize: glassSizeVal,
+          partyName: partyNameVal,
+          qty: qtyVal.toString(),
+          remarks: remarksVal,
+          createdAt: new Date().toISOString()
+        });
+
+        saveUserData();
+        renderUserData();
+        entryForm.reset();
+        setTodayAsDefaultDate();
+        glassTypeInput.focus();
+      });
+
+      function setTodayAsDefaultDate() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() +1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      // Export for User (own data)
+      function exportUserDataToExcel() {
+        const wsData = [
+          ["Date", "Glass Type", "Glass Size", "Party Name", "Quantity", "Remarks"]
+        ];
+        const dates = Object.keys(userDailyData).sort((a,b) => new Date(a) - new Date(b));
+        dates.forEach(dateStr => {
+          userDailyData[dateStr].forEach(entry => {
+            wsData.push([
+              dateStr,
+              entry.glassType,
+              entry.glassSize,
+              entry.partyName,
+              entry.qty,
+              entry.remarks
+            ]);
+          });
+        });
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!cols'] = [
+          {wch: 15}, {wch: 15}, {wch: 12}, {wch: 20}, {wch: 8}, {wch: 30}
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "DailyData");
+        const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+        const blob = new Blob([wbout], {type:"application/octet-stream"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${loggedInUser}_daily_data_export.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }
+      exportBtn.addEventListener('click', exportUserDataToExcel);
+
+      // --- ADMIN DATA MANAGEMENT ---
+
+      // Admin collects data from all users
+      // Users' data keys are all localStorage keys start with 'dailyData-'
+      let allUsersData = []; // array of {username,date,createdAt,glassType,glassSize,partyName,qty,remarks}
+
+      function loadAdminData() {
+        allUsersData = [];
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+          if(key.startsWith('dailyData-')){
+            const user = key.slice(10);
+            try{
+              const userDataRaw = localStorage.getItem(key);
+              if(!userDataRaw) return;
+              const userData = JSON.parse(userDataRaw);
+              Object.entries(userData).forEach(([dateStr, entries]) => {
+                entries.forEach(entry => {
+                  allUsersData.push({
+                    username: user,
+                    date: dateStr,
+                    createdAt: entry.createdAt || '',
+                    glassType: entry.glassType || '',
+                    glassSize: entry.glassSize || '',
+                    partyName: entry.partyName || '',
+                    qty: entry.qty || '',
+                    remarks: entry.remarks || ''
+                  });
+                });
+              });
+            } catch(e){
+              // ignore malformed user data
+            }
+          }
+        });
+        // sort by username then date ascending then time ascending
+        allUsersData.sort((a,b) => {
+          if(a.username < b.username) return -1;
+          if(a.username > b.username) return 1;
+          const da = new Date(a.date + 'T00:00:00');
+          const db = new Date(b.date + 'T00:00:00');
+          if(da < db) return -1;
+          if(da > db) return 1;
+          const ta = new Date(a.createdAt).getTime() || 0;
+          const tb = new Date(b.createdAt).getTime() || 0;
+          return ta - tb;
+        });
+      }
+
+      function renderAdminData() {
+        adminDataTableBody.innerHTML = '';
+        if(allUsersData.length === 0){
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 8;
+          td.style.textAlign = 'center';
+          td.textContent = 'No entries available.';
+          tr.appendChild(td);
+          adminDataTableBody.appendChild(tr);
+          return;
+        }
+        allUsersData.forEach(entry => {
+          const tr = document.createElement('tr');
+          const usernameTd = document.createElement('td');
+          usernameTd.textContent = entry.username;
+          tr.appendChild(usernameTd);
+
+          const dateTd = document.createElement('td');
+          dateTd.textContent = formatDate(entry.date);
+          tr.appendChild(dateTd);
+
+          const timeTd = document.createElement('td');
+          let timeString = '';
+          if(entry.createdAt){
+            const dt = new Date(entry.createdAt);
+            if(!isNaN(dt)){
+              timeString = dt.toLocaleTimeString(undefined, {hour: '2-digit', minute:'2-digit'});
+            }
+          }
+          timeTd.textContent = timeString;
+          tr.appendChild(timeTd);
+
+          ['glassType', 'glassSize', 'partyName', 'qty', 'remarks'].forEach(field => {
+            const td = document.createElement('td');
+            td.textContent = entry[field];
+            tr.appendChild(td);
+          });
+
+          adminDataTableBody.appendChild(tr);
+        });
+      }
+
+      // Admin export all data combined to Excel
+      function exportAdminDataToExcel(){
+        const wsData = [
+          ["Username","Date","Entry Time","Glass Type","Glass Size","Party Name","Quantity","Remarks"]
+        ];
+        allUsersData.forEach(entry => {
+          wsData.push([
+            entry.username,
+            entry.date,
+            entry.createdAt ? new Date(entry.createdAt).toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit'}) : '',
+            entry.glassType,
+            entry.glassSize,
+            entry.partyName,
+            entry.qty,
+            entry.remarks
+          ]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!cols'] = [
+          {wch: 15},{wch: 15},{wch: 12},{wch: 15},{wch: 15},{wch: 20},{wch: 8},{wch: 30}
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "AllUserData");
+        const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+        const blob = new Blob([wbout], {type:"application/octet-stream"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "all_users_daily_data_export.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }
+      adminExportBtn.addEventListener('click', exportAdminDataToExcel);
+
+      // Initial load
+      loadUsers();
+      loadSession();
+      if(loggedInUser && loggedInUserRole){
+        setupAfterLogin();
+      } else {
+        resetAppAfterLogout();
+      }
+    })();
+  </script>
+
+</body>
+</html>
